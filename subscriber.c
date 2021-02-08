@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#define TEST_PORT 8088
 
 /* Callback called when the client receives a CONNACK message from the broker. */
 void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
@@ -24,7 +25,7 @@ void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
 	/* Making subscriptions in the on_connect() callback means that if the
 	 * connection drops and is automatically resumed by the client, then the
 	 * subscriptions will be recreated when the client reconnects. */
-	rc = mosquitto_subscribe(mosq, NULL, "example/temperature", 1);
+	rc = mosquitto_subscribe(mosq, NULL, "#", 1);
 	if(rc != MOSQ_ERR_SUCCESS){
 		fprintf(stderr, "Error subscribing: %s\n", mosquitto_strerror(rc));
 		/* We might as well disconnect if we were unable to subscribe */
@@ -61,7 +62,7 @@ void on_subscribe(struct mosquitto *mosq, void *obj, int mid, int qos_count, con
 void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
 {
 	/* This blindly prints the payload, but the payload can be anything so take care. */
-	printf("%s %d %s\n", msg->topic, msg->qos, (char *)msg->payload);
+	printf("%s qos=%d payload=%s\n", msg->topic, msg->qos, (char *)msg->payload);
 }
 
 
@@ -69,6 +70,10 @@ int main(int argc, char *argv[])
 {
 	struct mosquitto *mosq;
 	int rc;
+	int test_port;
+
+	printf("Enter a broker port: ");
+	scanf("%d", &test_port);
 
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
@@ -93,12 +98,13 @@ int main(int argc, char *argv[])
 	 * This call makes the socket connection only, it does not complete the MQTT
 	 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
 	 * mosquitto_loop_forever() for processing net traffic. */
-	rc = mosquitto_connect(mosq, "test.mosquitto.org", 1883, 60);
+	rc = mosquitto_connect(mosq, "127.0.0.1", test_port, 60);
 	if(rc != MOSQ_ERR_SUCCESS){
 		mosquitto_destroy(mosq);
 		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
 		return 1;
 	}
+	printf("connection established\n");
 
 	/* Run the network loop in a blocking call. The only thing we do in this
 	 * example is to print incoming messages, so a blocking call here is fine.

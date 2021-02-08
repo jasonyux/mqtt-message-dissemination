@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#define TEST_PORT 8088
 
 /* Callback called when the client receives a CONNACK message from the broker. */
 void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
@@ -43,7 +44,9 @@ void on_publish(struct mosquitto *mosq, void *obj, int mid)
 int get_temperature(void)
 {
 	sleep(1); /* Prevent a storm of messages - this pretend sensor works at 1Hz */
-	return random()%100;
+	int temp = random()%100;
+	printf("send %d\n",temp);
+	return temp;
 }
 
 /* This function pretends to read some data from a sensor and publish it.*/
@@ -68,7 +71,8 @@ void publish_sensor_data(struct mosquitto *mosq)
 	 * qos = 2 - publish with QoS 2 for this example
 	 * retain = false - do not use the retained message feature for this message
 	 */
-	rc = mosquitto_publish(mosq, NULL, "example/temperature", strlen(payload), payload, 2, false);
+	rc = mosquitto_publish(mosq, NULL, "example/temperature",
+			strlen(payload), payload, 2, false);
 	if(rc != MOSQ_ERR_SUCCESS){
 		fprintf(stderr, "Error publishing: %s\n", mosquitto_strerror(rc));
 	}
@@ -79,7 +83,10 @@ int main(int argc, char *argv[])
 {
 	struct mosquitto *mosq;
 	int rc;
+	int test_port;
 
+	printf("Enter a broker port number: ");
+	scanf("%d", &test_port);
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 
@@ -102,7 +109,7 @@ int main(int argc, char *argv[])
 	 * This call makes the socket connection only, it does not complete the MQTT
 	 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
 	 * mosquitto_loop_forever() for processing net traffic. */
-	rc = mosquitto_connect(mosq, "127.0.0.1", 1883, 60);
+	rc = mosquitto_connect(mosq, "127.0.0.1", test_port, 60);
 	if(rc != MOSQ_ERR_SUCCESS){
 		mosquitto_destroy(mosq);
 		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
