@@ -8,7 +8,6 @@ services:
     container_name: broker1
     networks:
             - mqtt-broker-net
-    command: apk add vim
     tty: true
   broker2:
     image: mosq2
@@ -16,7 +15,6 @@ services:
       - ./data2:/mosquitto/data
       - ./log2:/mosquitto/log
     container_name: broker2
-    command: apk add vim
     networks:
             - mqtt-broker-net
     tty: true
@@ -26,47 +24,6 @@ services:
       - ./data3:/mosquitto/data
       - ./log3:/mosquitto/log
     container_name: broker3
-    command: apk add vim
-    networks:
-      - mqtt-broker-net
-    tty: true
-  publisher1:
-    image: mosq2
-    volumes:
-      - ./data_pub_1:/mosquitto/data
-      - ./log_pub_1:/mosquitto/log
-    container_name: publisher1
-    command: apk add vim
-    networks:
-      - mqtt-broker-net
-    tty: true
-  publisher2:
-    image: mosq2
-    volumes:
-      - ./data_pub_2:/mosquitto/data
-      - ./log_pub_2:/mosquitto/log
-    container_name: publisher2
-    command: apk add vim
-    networks:
-      - mqtt-broker-net
-    tty: true
-  subscriber1:
-    image: mosq2
-    volumes:
-      - ./data_sub_1:/mosquitto/data
-      - ./log_sub_1:/mosquitto/log
-    container_name: subscriber1
-    command: apk add vim
-    networks:
-      - mqtt-broker-net
-    tty: true
-  subscriber2:
-    image: mosq2
-    volumes:
-      - ./data_sub_2:/mosquitto/data
-      - ./log_sub_2:/mosquitto/log
-    container_name: subscriber2
-    command: apk add vim
     networks:
       - mqtt-broker-net
     tty: true

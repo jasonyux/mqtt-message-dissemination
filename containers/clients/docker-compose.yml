@@ -1,0 +1,42 @@
+version: "3.0"
+services:
+  publisher1:
+    image: mosq2
+    volumes:
+      - ./data_pub_1:/mosquitto/data
+      - ./log_pub_1:/mosquitto/log
+    container_name: publisher1
+    networks:
+      - mqtt-broker-net
+    tty: true
+  publisher2:
+    image: mosq2
+    volumes:
+      - ./data_pub_2:/mosquitto/data
+      - ./log_pub_2:/mosquitto/log
+    container_name: publisher2
+    networks:
+      - mqtt-broker-net
+    tty: true
+  subscriber1:
+    image: mosq2
+    volumes:
+      - ./data_sub_1:/mosquitto/data
+      - ./log_sub_1:/mosquitto/log
+    container_name: subscriber1
+    networks:
+      - mqtt-broker-net
+    tty: true
+  subscriber2:
+    image: mosq2
+    volumes:
+      - ./data_sub_2:/mosquitto/data
+      - ./log_sub_2:/mosquitto/log
+    container_name: subscriber2
+    networks:
+      - mqtt-broker-net
+    tty: true
+
+networks:
+        mqtt-broker-net:
+                driver: bridge
