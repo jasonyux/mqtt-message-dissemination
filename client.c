@@ -50,7 +50,7 @@ int get_temperature(void)
 }
 
 /* This function pretends to read some data from a sensor and publish it.*/
-void publish_sensor_data(struct mosquitto *mosq)
+void publish_sensor_data(struct mosquitto *mosq, char *test_topic)
 {
 	char payload[20];
 	int temp;
@@ -71,7 +71,7 @@ void publish_sensor_data(struct mosquitto *mosq)
 	 * qos = 2 - publish with QoS 2 for this example
 	 * retain = false - do not use the retained message feature for this message
 	 */
-	rc = mosquitto_publish(mosq, NULL, "example/temperature",
+	rc = mosquitto_publish(mosq, NULL, test_topic,
 			strlen(payload), payload, 2, false);
 	if(rc != MOSQ_ERR_SUCCESS){
 		fprintf(stderr, "Error publishing: %s\n", mosquitto_strerror(rc));
@@ -84,9 +84,13 @@ int main(int argc, char *argv[])
 	struct mosquitto *mosq;
 	int rc;
 	int test_port;
+	char test_topic[50];
 
 	printf("Enter a broker port number: ");
 	scanf("%d", &test_port);
+	printf("Enter a topic: ");
+	scanf("%s", test_topic);
+	printf("Entered topic: %s\n", test_topic);
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 
@@ -132,7 +136,7 @@ int main(int argc, char *argv[])
 	 * In this case we know it is 1 second before we start publishing.
 	 */
 	while(1){
-		publish_sensor_data(mosq);
+		publish_sensor_data(mosq, test_topic);
 	}
 
 	mosquitto_lib_cleanup();

@@ -5,6 +5,8 @@
 #include <unistd.h>
 
 #define TEST_PORT 8088
+int test_port, test_num_topics;
+static char **test_topic;
 
 /* Callback called when the client receives a CONNACK message from the broker. */
 void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
@@ -25,7 +27,7 @@ void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
 	/* Making subscriptions in the on_connect() callback means that if the
 	 * connection drops and is automatically resumed by the client, then the
 	 * subscriptions will be recreated when the client reconnects. */
-	rc = mosquitto_subscribe(mosq, NULL, "#", 1);
+	rc = mosquitto_subscribe_multiple(mosq, NULL, test_num_topics, test_topic, 1, 0, NULL);
 	if(rc != MOSQ_ERR_SUCCESS){
 		fprintf(stderr, "Error subscribing: %s\n", mosquitto_strerror(rc));
 		/* We might as well disconnect if we were unable to subscribe */
@@ -70,11 +72,20 @@ int main(int argc, char *argv[])
 {
 	struct mosquitto *mosq;
 	int rc;
-	int test_port;
+	char buf[50];
 
 	printf("Enter a broker port: ");
 	scanf("%d", &test_port);
-
+	printf("Enter the number of topics to subscribe to: ");
+	scanf("%d", &test_num_topics);
+	test_topic = malloc(sizeof(char *) * test_num_topics);
+	for (int i = 0; i < test_num_topics; i++) {
+		printf("Enter topic %d to subscriber to: ", i+1);
+		scanf("%s", buf);
+		test_topic[i] = malloc(sizeof(char) * strlen(buf));
+		strncpy(test_topic[i], buf, strlen(buf));
+		printf("INFO: Subscribing to %s\n", test_topic[i]);
+	}
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 

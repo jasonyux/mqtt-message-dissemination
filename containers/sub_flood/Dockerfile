@@ -1,0 +1,15 @@
+FROM ubuntu
+
+RUN apt-get update && apt upgrade -y && apt install openssl -y
+
+VOLUME ["/mosquitto/data", "/mosquitto/log"]
+
+# Set up the entry point script and default command
+COPY ./sub_flood_config.conf ./broker/
+COPY ./pub_flood_config.conf ./broker/
+COPY ./sub_flood_broker ./broker/
+COPY ./pub_flood_broker ./broker/
+
+EXPOSE 1883
+# ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
