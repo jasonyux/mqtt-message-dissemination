@@ -1,6 +1,7 @@
 FROM ubuntu
 
-RUN apt-get update && apt upgrade -y && apt install openssl vim -y
+RUN apt-get update && apt upgrade -y && \
+	apt install openssl vim tcpdump -y
 
 VOLUME ["/mosquitto/data", "/mosquitto/log"]
 

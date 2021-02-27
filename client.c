@@ -84,8 +84,10 @@ int main(int argc, char *argv[])
 	struct mosquitto *mosq;
 	int rc;
 	int test_port;
-	char test_topic[50];
+	char test_ip[20], test_topic[50];
 
+	printf("Enter a broker ip: ");
+	scanf("%s", test_ip);
 	printf("Enter a broker port number: ");
 	scanf("%d", &test_port);
 	printf("Enter a topic: ");
@@ -113,7 +115,7 @@ int main(int argc, char *argv[])
 	 * This call makes the socket connection only, it does not complete the MQTT
 	 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
 	 * mosquitto_loop_forever() for processing net traffic. */
-	rc = mosquitto_connect(mosq, "127.0.0.1", test_port, 60);
+	rc = mosquitto_connect(mosq, test_ip, test_port, 60);
 	if(rc != MOSQ_ERR_SUCCESS){
 		mosquitto_destroy(mosq);
 		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));

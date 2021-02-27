@@ -1,22 +1,19 @@
 version: "3.0"
 services:
-  publisher:
-    image: mosq
+  pub:
+    image: my_mosq_client
     volumes:
       - ./data_cli_pub:/mosquitto/data
       - ./log_cli_pub:/mosquitto/log
-    networks:
-      - my-net
     tty: true
-  subscriber:
-    image: mosq
+  sub:
+    image: my_mosq_client
     volumes:
       - ./data_cli_sub:/mosquitto/data
       - ./log_cli_sub:/mosquitto/log
-    networks:
-      - my-net
     tty: true
 
 networks:
-        my-net:
-                driver: bridge
+        default:
+                external:
+                        name: my-net

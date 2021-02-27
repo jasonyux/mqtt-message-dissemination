@@ -1,0 +1,6 @@
+246 packets seen, 246 TCP packets traced
+elapsed wallclock time: 0:00:04.189524, 58 pkts/sec analyzed
+trace file elapsed time: 0:00:42.717641
+TCP connection info:
+  1: 172.19.0.6:57390 - 172.19.0.5:8088 (a2b)    44>   79<
+  2: 172.19.0.10:33266 - 172.19.0.6:8088 (c2d)   44>   79<
