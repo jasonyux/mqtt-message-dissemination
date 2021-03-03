@@ -3,14 +3,14 @@ services:
   pub:
     image: my_mosq_client
     volumes:
-      - ./data_cli_pub:/mosquitto/data
-      - ./log_cli_pub:/mosquitto/log
+            - ./data_cli_pub:/client/data
+            - ./log_cli_pub:/client/log
     tty: true
   sub:
     image: my_mosq_client
     volumes:
-      - ./data_cli_sub:/mosquitto/data
-      - ./log_cli_sub:/mosquitto/log
+            - ./data_cli_sub:/client/data
+            - ./log_cli_sub:/client/log
     tty: true
 
 networks:

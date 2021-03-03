@@ -1,0 +1,11 @@
+This is a linear model, in which:
+- all configs are default
+
+setup:
+- b1 has a publisher
+- b7 has a subscriber
+
+measurement:
+- first started tcpdump AND top on all brokers, from b7 to b1
+- then start the publisher on b1 on topic mytest/
+- then start the subscriber on b7 on topic mytest/

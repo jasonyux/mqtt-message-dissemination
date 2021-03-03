@@ -3,13 +3,14 @@ services:
   broker:
     image: my_mosq
     volumes:
-      - ./data1:/mosquitto/data
-      - ./log1:/mosquitto/log
+      - ./broker_data:/broker/data
+      - ./broker_log:/broker/log
   # container_name: sub_b1
     networks:
             - my-net
     tty: true
 
 networks:
-        my-net:
-                driver: bridge
+        default:
+                external:
+                        name: my-net
