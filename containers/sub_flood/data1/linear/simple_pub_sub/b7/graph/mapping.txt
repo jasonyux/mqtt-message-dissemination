@@ -1,0 +1,10 @@
+1 arg remaining, starting with '../b7.pcap'
+Ostermann's tcptrace -- version 6.6.7 -- Thu Nov  4, 2004
+
+1037 packets seen, 1037 TCP packets traced
+elapsed wallclock time: 0:00:00.609236, 1702 pkts/sec analyzed
+trace file elapsed time: 0:02:49.271951
+TCP connection info:
+  1: 172.19.0.10:47280 - 172.19.0.3:8088 (a2b)  177>  341<
+  2: 172.19.0.3:42784 - 172.19.0.2:8088 (c2d)   173>  337<
+  3: 172.19.0.2:52508 - 172.19.0.3:8088 (e2f)     6>    3<
