@@ -1,0 +1,6 @@
+Configuration:
+- default
+
+setup:
+1. publisher publishes b1
+2. subscriber subscribes from I forgot, but only one
