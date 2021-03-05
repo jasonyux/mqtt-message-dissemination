@@ -137,7 +137,8 @@ int main(int argc, char *argv[])
 	 * the connect callback.
 	 * In this case we know it is 1 second before we start publishing.
 	 */
-	while(1){
+	int i=0;
+	while(i++ < 100){
 		publish_sensor_data(mosq, test_topic);
 	}
 

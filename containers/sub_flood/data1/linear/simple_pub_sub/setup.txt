@@ -4,6 +4,7 @@ This is a linear model, in which:
 setup:
 - b1 has a publisher
 - b7 has a subscriber
+- publisher publishes exactly 100 packages
 
 measurement:
 - first started tcpdump AND top on all brokers, from b7 to b1
