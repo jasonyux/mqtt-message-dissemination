@@ -1,6 +1,10 @@
 Configuration:
 - default
 
+pub/sub setup:
+1. subscriber first subscribes
+2. publisher then publishes 100 messages
+
 setup:
 1. publisher publishes b1
-2. subscriber subscribes from I forgot, but only one
+2. subscriber subscribes from b7

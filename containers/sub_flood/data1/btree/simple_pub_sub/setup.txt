@@ -1,0 +1,6 @@
+configuration
+- default
+
+pub/sub config
+1. publisher at b1
+2. subscriber at b4
