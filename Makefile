@@ -2,15 +2,23 @@ CC = gcc
 CFLAGS = -Wall -g
 LDLIBS = -lmosquitto
 
-.PHONY: all
+.PHONY: all clean
 
-all: client subscriber
+all: publisher subscriber subscriber_100
 
-client: client.o
+clean:
+	rm -f *.o publisher subscriber subscriber_100
 
-client.o: client.c
+publisher: publisher.o
+
+publisher.o: publisher.c
 
 subscriber: subscriber.o
 
 subscriber.o: subscriber.c
+
+subscriber_100: subscriber_100.o
+
+subscriber_100.o: subscriber_100.c
+
 
