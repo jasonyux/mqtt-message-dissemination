@@ -7,7 +7,7 @@ LDLIBS = -lmosquitto
 all: publisher subscriber subscriber_100 publisher_args subscriber_args
 
 clean:
-	rm -f *.o publisher subscriber subscriber_100
+	rm -f *.o publisher subscriber subscriber_100 publisher_args subscriber_args
 
 publisher: publisher.o
 
