@@ -8,7 +8,7 @@ PUB_IP=$4
 CLI_DIRECTORY=$5
 PUB_WAIT=$6
 
-if [ -z "$BROKER_DIRECTORY" ] || [ -z "$TIMEOUT" ] || [ -z "$SUB_IP" ] || [ -z "$PUB_IP" ] || [ -z "$CLI_DIRECTORY"];  then
+if [ -z "$BROKER_DIRECTORY" ] || [ -z "$TIMEOUT" ] || [ -z "$SUB_IP" ] || [ -z "$PUB_IP" ] || [ -z "$CLI_DIRECTORY" ]; then
 		echo "usage: ./exp.sh <broker_data_path> <broker_timeout> <sub_broker_ip> <pub_broker_ip> <cli_path> <pub_wait>"
 			exit
 fi
