@@ -83,9 +83,29 @@ int main(int argc, char *argv[])
 {
 	struct mosquitto *mosq;
 	int rc;
-	int test_port;
-	char test_ip[20], test_topic[50];
+	int test_port, test_num_topics;
+	char test_ip[20], **test_topic, *topic, buf[20];
 
+	if (argc < 5) {	
+		fprintf(stderr, "./publisher_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+		return -1;
+	}else{
+		sscanf(argv[1], "%s", test_ip);
+		test_port = atoi(argv[2]);
+		test_num_topics = atoi(argv[3]);
+		if (argc < 4 + test_num_topics) {
+			fprintf(stderr, "./pubsliher_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+			return -1;
+		}
+	}
+	test_topic = malloc(sizeof(char *) * test_num_topics);
+	for (int i = 0; i < test_num_topics; i++) {
+		sscanf(argv[4 + i], "%s", buf);
+		test_topic[i] = malloc(sizeof(char) * strlen(buf));
+		strncpy(test_topic[i], buf, strlen(buf));
+		printf("[ INFO ] pub obtained topic=%s\n", test_topic[i]);
+	}
+#if 0
 	if (argc != 4) {	
 		fprintf(stderr, "./publisher_args <broker_ip> <broker_port> <topic>\n");
 		return -1;
@@ -96,6 +116,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Entered topic: %s\n", test_topic);
+#endif
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 
@@ -104,47 +125,61 @@ int main(int argc, char *argv[])
 	 * clean session = true -> the broker should remove old sessions when we connect
 	 * obj = NULL -> we aren't passing any of our private data for callbacks
 	 */
-	mosq = mosquitto_new(NULL, true, NULL);
-	if(mosq == NULL){
-		fprintf(stderr, "Error: Out of memory.\n");
-		return 1;
+	for (int kid = 0; kid < test_num_topics; kid++) {
+		int pid = fork();
+		if (pid < 0) {
+			exit(-1);
+		}else if (pid > 0) {
+			/* no op, perhaps add wait */
+		}else{
+			/* child exits when done. Child never forks. */
+			topic = test_topic[kid];
+			mosq = mosquitto_new(NULL, true, NULL);
+			if(mosq == NULL){
+				fprintf(stderr, "Error: Out of memory.\n");
+				return 1;
+			}
+
+			/* Configure callbacks. This should be done before connecting ideally. */
+			mosquitto_connect_callback_set(mosq, on_connect);
+			mosquitto_publish_callback_set(mosq, on_publish);
+
+			/* Connect to test.mosquitto.org on port 1883, with a keepalive of 60 seconds.
+			 * This call makes the socket connection only, it does not complete the MQTT
+			 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
+			 * mosquitto_loop_forever() for processing net traffic. */
+			rc = mosquitto_connect(mosq, test_ip, test_port, 60);
+			if(rc != MOSQ_ERR_SUCCESS){
+				mosquitto_destroy(mosq);
+				fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
+				return 1;
+			}
+
+			/* Run the network loop in a background thread, this call returns quickly. */
+			rc = mosquitto_loop_start(mosq);
+			if(rc != MOSQ_ERR_SUCCESS){
+				mosquitto_destroy(mosq);
+				fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
+				return 1;
+			}
+
+			/* At this point the client is connected to the network socket, but may not
+			 * have completed CONNECT/CONNACK.
+			 * It is fairly safe to start queuing messages at this point, but if you
+			 * want to be really sure you should wait until after a successful call to
+			 * the connect callback.
+			 * In this case we know it is 1 second before we start publishing.
+			 */
+			printf("[ INFO ]Publishing at topic: %s\n", topic);
+			int i=0;
+			while(i++ < 100){
+				publish_sensor_data(mosq, topic);
+			}
+
+			mosquitto_lib_cleanup();
+
+			exit(0);
+		}
 	}
-
-	/* Configure callbacks. This should be done before connecting ideally. */
-	mosquitto_connect_callback_set(mosq, on_connect);
-	mosquitto_publish_callback_set(mosq, on_publish);
-
-	/* Connect to test.mosquitto.org on port 1883, with a keepalive of 60 seconds.
-	 * This call makes the socket connection only, it does not complete the MQTT
-	 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
-	 * mosquitto_loop_forever() for processing net traffic. */
-	rc = mosquitto_connect(mosq, test_ip, test_port, 60);
-	if(rc != MOSQ_ERR_SUCCESS){
-		mosquitto_destroy(mosq);
-		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
-		return 1;
-	}
-
-	/* Run the network loop in a background thread, this call returns quickly. */
-	rc = mosquitto_loop_start(mosq);
-	if(rc != MOSQ_ERR_SUCCESS){
-		mosquitto_destroy(mosq);
-		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
-		return 1;
-	}
-
-	/* At this point the client is connected to the network socket, but may not
-	 * have completed CONNECT/CONNACK.
-	 * It is fairly safe to start queuing messages at this point, but if you
-	 * want to be really sure you should wait until after a successful call to
-	 * the connect callback.
-	 * In this case we know it is 1 second before we start publishing.
-	 */
-	int i=0;
-	while(i++ < 100){
-		publish_sensor_data(mosq, test_topic);
-	}
-
-	mosquitto_lib_cleanup();
 	return 0;
 }
