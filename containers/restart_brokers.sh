@@ -2,6 +2,7 @@
 
 DIR="/broker"
 PROGRAM=$1
+CONFIG_FILE=$2 #e.g. pub_flood_config.conf
 
 if [ -z "$PROGRAM" ]; then
 	echo "[ ERROR ] usage ./restart_brokers.sh <broker_program_name>"
@@ -9,7 +10,7 @@ if [ -z "$PROGRAM" ]; then
 fi
 
 KILL_COMMAND="kill -9 \$(pidof ${PROGRAM})"
-START_COMMAND="sleep 10 && ${DIR}/sub_flood_broker_v3 -c ${DIR}/sub_flood_config.conf -d"
+START_COMMAND="sleep 10 && ${DIR}/${PROGRAM} -c ${DIR}/${CONFIG_FILE} -d"
 
 KILL_SUB="kill -9 \$(pidof subscriber_args)"
 
