@@ -19,10 +19,15 @@ if [ -z "$PUB_WAIT" ]; then
 fi
 
 SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 7 a1 a2 a3 a4 a5 a6 a7"
-PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 7 a1 a2 a3 a4 a5 a6 a7"
+PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 1 a1"
 
+#DOC_SUB_COMMAND="docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
+
+# sh -c "$DOC_SUB_COMMAND"
+#eval "$DOC_SUB_COMMAND"
+#echo "[ LOG ] executed '${DOC_SUB_COMMAND}'"
 eval "docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
-echo "[ LOG ] executed docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
+echo "[LOG] executed docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
 
 echo "[ LOG ] sleeping for ${PUB_WAIT}"
 sleep ${PUB_WAIT}
