@@ -20,7 +20,6 @@ fi
 eval "/usr/bin/mkdir ${PATH}/csv"
 
 while [ $COUNT -le 7 ]; do
-	eval "/usr/bin/tshark -r ${PATH}/b${COUNT}/b${COUNT}.pcap $PARAMS > \ 
-		${PATH}/csv/b${COUNT}.csv"
+	eval "/usr/bin/tshark -r ${PATH}/b${COUNT}/b${COUNT}.pcap $PARAMS > ${PATH}/csv/b${COUNT}.csv"
 	COUNT=$(($COUNT + 1))
 done
