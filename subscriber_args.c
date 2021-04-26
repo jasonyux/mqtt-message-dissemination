@@ -8,6 +8,31 @@
 int test_port, test_num_topics;
 static char **test_topic;
 
+static char **generate_topics(void)
+{
+	test_topic = malloc(sizeof(char *) * test_num_topics);
+	char numset[] = "0123456789";
+	char charset[] = "abcdefghijklmnopqrstuvwxyz";
+
+	int num_pos = 0;
+	int char_pos = 0;
+	for (int i = 0; i < test_num_topics; i++) {
+		test_topic[i] = malloc(sizeof(char) * 3);
+		char *tmp = test_topic[i];
+		*tmp++ = charset[char_pos];
+		*tmp++ = numset[num_pos++];
+		*tmp = '\0';
+		// if num is at the end, 
+		// loop num around, and increase char
+		if(num_pos == 10){
+			num_pos = 0;
+			char_pos++;
+		}
+		printf("[ INFO ] generated %s\n", test_topic[i]);
+	}
+	return test_topic;	
+}
+
 /* Callback called when the client receives a CONNACK message from the broker. */
 void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
 {
@@ -75,15 +100,21 @@ int main(int argc, char *argv[])
 	char buf[50];
 	char test_ip[20];
 	
-	if (argc < 5) {	
-		fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+	if (argc < 4) {	
+		fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> "
+				"<num_topic> <topic1> ...\n");
 		return -1;
 	}else{
 		sscanf(argv[1], "%s", test_ip);
 		test_port = atoi(argv[2]);
 		test_num_topics = atoi(argv[3]);
-		if (argc < 4 + test_num_topics) {
-			fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+		if (argc - 4 == 0) {
+			test_topic = generate_topics();
+			goto generated;	
+		}
+		if (argc - 4 < test_num_topics) {
+			fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> "
+					"<num_topic> <topic1> ...\n");
 			return -1;
 		}
 	}
@@ -96,6 +127,7 @@ int main(int argc, char *argv[])
 		printf("INFO: Subscribing to %s\n", test_topic[i]);
 	}
 
+generated:
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 

@@ -9,6 +9,33 @@
 #include <unistd.h>
 
 #define TEST_PORT 8088
+#define MICROTOMILI 1000
+
+static char **generate_topics(int test_num_topics)
+{
+	char **test_topic = malloc(sizeof(char *) * test_num_topics);
+	char numset[] = "0123456789";
+	char charset[] = "abcdefghijklmnopqrstuvwxyz";
+
+	int num_pos = 0;
+	int char_pos = 0;
+	for (int i = 0; i < test_num_topics; i++) {
+		// an alphabet + a number + \0
+		test_topic[i] = malloc(sizeof(char) * 3);
+		char *tmp = test_topic[i];
+		*tmp++ = charset[char_pos];
+		*tmp++ = numset[num_pos++];
+		*tmp = '\0';
+		// if num is at the end, 
+		// loop num around, and increase char
+		if(num_pos == 10){
+			num_pos = 0;
+			char_pos++;
+		}
+		printf("[ INFO ] generated %s\n", test_topic[i]);
+	}
+	return test_topic;	
+}
 
 /* Callback called when the client receives a CONNACK message from the broker. */
 void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
@@ -43,7 +70,7 @@ void on_publish(struct mosquitto *mosq, void *obj, int mid)
 
 int get_temperature(void)
 {
-	sleep(1); /* Prevent a storm of messages - this pretend sensor works at 1Hz */
+	/* Prevent a storm of messages - this pretend sensor works at 1Hz */
 	int temp = random()%100;
 	printf("send %d\n",temp);
 	return temp;
@@ -83,40 +110,41 @@ int main(int argc, char *argv[])
 {
 	struct mosquitto *mosq;
 	int rc;
-	int test_port, test_num_topics;
+	int test_port, test_num_topics, num_msg, msg_mili_sleep;
 	char test_ip[20], **test_topic, *topic, buf[20];
 
-	if (argc < 5) {	
-		fprintf(stderr, "./publisher_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+	if (argc < 6) {	
+		fprintf(stderr, "./publisher_args <broker_ip> <broker_port> "
+				"<num_msg_per_topic> <msg_sleep_msec> "
+				"<num_topic> <topic1> ...\n");
 		return -1;
 	}else{
 		sscanf(argv[1], "%s", test_ip);
 		test_port = atoi(argv[2]);
-		test_num_topics = atoi(argv[3]);
-		if (argc < 4 + test_num_topics) {
-			fprintf(stderr, "./pubsliher_args <broker_ip> <broker_port> <num_topic> <topic1> ...\n");
+		num_msg = atoi(argv[3]);
+		msg_mili_sleep = atoi(argv[4]);
+		test_num_topics = atoi(argv[5]);
+		if (argc - 6 == 0 && test_num_topics > 0) {
+			// generate topics
+			test_topic = generate_topics(test_num_topics);
+			goto generated_topics;
+		}
+		if (argc - 6 < test_num_topics || msg_mili_sleep <= 0) {
+			fprintf(stderr, "./pubsliher_args <broker_ip> <broker_port> "
+					"<num_msg_per_topic> <msg_sleep_msec> "
+					"<num_topic> <topic1> ...\n");
 			return -1;
 		}
 	}
 	test_topic = malloc(sizeof(char *) * test_num_topics);
 	for (int i = 0; i < test_num_topics; i++) {
-		sscanf(argv[4 + i], "%s", buf);
+		sscanf(argv[6 + i], "%s", buf);
 		test_topic[i] = malloc(sizeof(char) * strlen(buf));
 		strncpy(test_topic[i], buf, strlen(buf));
 		printf("[ INFO ] pub obtained topic=%s\n", test_topic[i]);
 	}
-#if 0
-	if (argc != 4) {	
-		fprintf(stderr, "./publisher_args <broker_ip> <broker_port> <topic>\n");
-		return -1;
-	}else{
-		sscanf(argv[1], "%s", test_ip);
-		test_port = atoi(argv[2]);
-		sscanf(argv[3], "%s", test_topic);
-	}
 
-	printf("Entered topic: %s\n", test_topic);
-#endif
+generated_topics:
 	/* Required before calling other mosquitto functions */
 	mosquitto_lib_init();
 
@@ -172,8 +200,9 @@ int main(int argc, char *argv[])
 			 */
 			printf("[ INFO ]Publishing at topic: %s\n", topic);
 			int i=0;
-			while(i++ < 100){
+			while(i++ < num_msg){
 				publish_sensor_data(mosq, topic);
+				usleep(msg_mili_sleep * MICROTOMILI); 
 			}
 
 			mosquitto_lib_cleanup();

@@ -22,9 +22,9 @@ echo "[ LOG ] Necessary Sleeping for 10 sec"
 sleep 10 # ensures that broker from previous command wakes up
 
 echo "[ LOG ] ----- exp_data.sh"
-sh ./exp_data.sh $1 $2
+sh ./exp_data.sh $BROKER_DIRECTORY $TIMEOUT
 
 sleep 2
 
 echo "[ LOG ] ----- exp_cli.sh"
-sh ./exp_clients.sh $3 $4 $5 $6
+sh ./exp_clients.sh $SUB_IP $PUB_IP $CLI_DIRECTORY 5
