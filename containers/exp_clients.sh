@@ -19,7 +19,7 @@ if [ -z "$PUB_WAIT" ]; then
 fi
 
 SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 7"
-PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 100 1000 3"
+PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 100 1000 7"
 
 #DOC_SUB_COMMAND="docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
 
