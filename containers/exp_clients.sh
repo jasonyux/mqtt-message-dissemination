@@ -18,7 +18,7 @@ if [ -z "$PUB_WAIT" ]; then
 	PUB_WAIT=5
 fi
 
-SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 50"
+SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 100"
 PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 100 1000 1"
 
 #DOC_SUB_COMMAND="docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
