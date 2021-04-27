@@ -19,7 +19,11 @@ if [ -z "$PUB_WAIT" ]; then
 fi
 
 SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 1"
-PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 60 1000 1"
+# this is used for heat map
+#PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 2 1000 5 a0 a0 a0 a0 a0"
+
+# this is used for delay map
+PUB_COMMAND="${DIRECTORY}/publisher_args_dup ${PUB_IP} ${PUB_PORT} 100 1000 100 a0"
 
 #DOC_SUB_COMMAND="docker exec -d clients_sub_1 sh -c '${SUB_COMMAND}'"
 

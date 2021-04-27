@@ -4,10 +4,12 @@ LDLIBS = -lmosquitto
 
 .PHONY: all clean
 
-all: publisher subscriber subscriber_100 publisher_args subscriber_args
+all: publisher subscriber subscriber_100 \
+	publisher_args subscriber_args publisher_args_dup
 
 clean:
-	rm -f *.o publisher subscriber subscriber_100 publisher_args subscriber_args
+	rm -f *.o publisher subscriber subscriber_100 \
+		publisher_args subscriber_args publisher_args_dup
 
 publisher: publisher.o
 
@@ -24,3 +26,5 @@ subscriber_100.o: subscriber_100.c
 publisher_args: publisher_args.c
 
 subscriber_args: subscriber_args.c
+
+publisher_args_dup:
