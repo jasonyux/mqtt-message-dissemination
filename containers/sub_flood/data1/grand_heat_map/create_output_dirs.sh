@@ -19,16 +19,16 @@ if [ -z $BASE_DIR ] || [ ! -d "$BASE_DIR" ]; then
 	exit
 fi
 
-COUNT=1
-while [ $COUNT -le 5 ]; do
+COUNT=0
+while [ $COUNT -le 7 ]; do
 	COUNT_2=1
 	while [ $COUNT_2 -le 7 ]; do
-		CURR_DIR="$BASE_DIR/SPR_${COUNT}-4/OI_${COUNT_2}-7/linear_sf"
+		CURR_DIR="$BASE_DIR/SPR_${COUNT}-6/OI_${COUNT_2}-7/linear_sf"
 		create_exp_folder "$CURR_DIR"
-		CURR_DIR="$BASE_DIR/SPR_${COUNT}-4/OI_${COUNT_2}-7/linear_pf"
+		CURR_DIR="$BASE_DIR/SPR_${COUNT}-6/OI_${COUNT_2}-7/linear_pf"
 		create_exp_folder "$CURR_DIR"
 		COUNT_2=$(($COUNT_2 + 2))
 	done
-	COUNT=$(($COUNT + 1))
+	COUNT=$(($COUNT + 2))
 done
 
