@@ -7,6 +7,7 @@ PUB_PORT=8088
 
 DIRECTORY=$3
 PUB_WAIT=$4
+SUB_QOS=$5
 TOPICS=a7
 
 if [ -z "$SUB_IP" ] || [ -z "$PUB_IP" ] || [ -z "$DIRECTORY" ]; then
@@ -18,7 +19,12 @@ if [ -z "$PUB_WAIT" ]; then
 	PUB_WAIT=5
 fi
 
-SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} 1"
+if [ -z "$SUB_QOS" ]; then
+	echo "[ LOG ] configured default sub QoS=$SUB_QOS"
+	SUB_QOS=2
+fi
+
+SUB_COMMAND="${DIRECTORY}/subscriber_args ${SUB_IP} ${SUB_PORT} $SUB_QOS 1"
 # this is used for heat map
 #PUB_COMMAND="${DIRECTORY}/publisher_args ${PUB_IP} ${PUB_PORT} 2 1000 5 a0 a0 a0 a0 a0"
 

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #define TEST_PORT 8088
-int test_port, test_num_topics;
+int test_port, test_num_topics, my_qos;
 static char **test_topic;
 
 static char **generate_topics(void)
@@ -52,7 +52,8 @@ void on_connect(struct mosquitto *mosq, void *obj, int reason_code)
 	/* Making subscriptions in the on_connect() callback means that if the
 	 * connection drops and is automatically resumed by the client, then the
 	 * subscriptions will be recreated when the client reconnects. */
-	rc = mosquitto_subscribe_multiple(mosq, NULL, test_num_topics, test_topic, 1, 0, NULL);
+	rc = mosquitto_subscribe_multiple(mosq, NULL, test_num_topics, test_topic, my_qos, 
+			0, NULL);
 	if(rc != MOSQ_ERR_SUCCESS){
 		fprintf(stderr, "Error subscribing: %s\n", mosquitto_strerror(rc));
 		/* We might as well disconnect if we were unable to subscribe */
@@ -100,19 +101,20 @@ int main(int argc, char *argv[])
 	char buf[50];
 	char test_ip[20];
 	
-	if (argc < 4) {	
-		fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> "
+	if (argc < 5) {	
+		fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> <qos>"
 				"<num_topic> <topic1> ...\n");
 		return -1;
 	}else{
 		sscanf(argv[1], "%s", test_ip);
 		test_port = atoi(argv[2]);
-		test_num_topics = atoi(argv[3]);
-		if (argc - 4 == 0) {
+		my_qos = atoi(argv[3]);
+		test_num_topics = atoi(argv[4]);
+		if (argc - 5 == 0) {
 			test_topic = generate_topics();
 			goto generated;	
 		}
-		if (argc - 4 < test_num_topics) {
+		if (argc - 5 < test_num_topics) {
 			fprintf(stderr, "./subscriber_args <broker_ip> <broker_port> "
 					"<num_topic> <topic1> ...\n");
 			return -1;
@@ -121,7 +123,7 @@ int main(int argc, char *argv[])
 	
 	test_topic = malloc(sizeof(char *) * test_num_topics);
 	for (int i = 0; i < test_num_topics; i++) {
-		sscanf(argv[4 + i], "%s", buf);
+		sscanf(argv[5 + i], "%s", buf);
 		test_topic[i] = malloc(sizeof(char) * strlen(buf));
 		strncpy(test_topic[i], buf, strlen(buf));
 		printf("INFO: Subscribing to %s\n", test_topic[i]);
