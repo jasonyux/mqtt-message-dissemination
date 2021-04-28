@@ -20,11 +20,11 @@ if [ -z $BASE_DIR ] || [ ! -d "$BASE_DIR" ]; then
 fi
 
 COUNT=0
-while [ $COUNT -le 76 ]; do
+while [ $COUNT -le 16 ]; do
 	CURR_DIR="$BASE_DIR/tc-${COUNT}/linear_sf"
 	create_exp_folder "$CURR_DIR"
 	CURR_DIR="$BASE_DIR/tc-${COUNT}/linear_pf"
 	create_exp_folder "$CURR_DIR"
-	COUNT=$(($COUNT + 25))
+	COUNT=$(($COUNT + 5))
 done
 
