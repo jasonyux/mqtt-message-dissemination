@@ -12,7 +12,7 @@ Future updates would add more information about:
 ## Project Structure
 
 - `broker/` is the submodule for Mosquitto repository that I forked. That repo contains the source code I have modified for implementing subscription flooding algorithm.
-
+  - **note that the SF related code is in the `subscription_flooding` branch**
 - `experiment/` contains all experiments and scripts related to this project
   - `analysis_scripts/` contains python files related to analyzing data
   - `broker_container/` contains docker container configuration, related programs, and experimental data collected for **brokers**
