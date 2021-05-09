@@ -6,8 +6,8 @@ RUN apt-get update && apt upgrade -y && \
 VOLUME ["/client/data", "/client/log"]
 
 # Set up the entry point script and default command
-COPY ./publisher ./client/
-COPY ./subscriber ./client/
+COPY ./client_program/publisher* ./client/
+COPY ./client_program/subscriber* ./client/
 
 EXPOSE 1883
 # ENTRYPOINT ["./docker-entrypoint.sh"]
